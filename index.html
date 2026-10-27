@@ -8,7 +8,7 @@
 <style>
 *{box-sizing:border-box}
 html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#526269}
-body{position:relative;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+body{position:relative;cursor:default;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 #ambient{position:fixed;inset:-9%;width:118%;height:118%;object-fit:cover;filter:blur(38px) saturate(.83) brightness(.82);transform:scale(1.06);pointer-events:none}
 #shade{position:fixed;inset:0;background:radial-gradient(ellipse at center,rgba(10,18,21,.025),rgba(11,20,23,.24) 91%);pointer-events:none}
 #stage{width:min(100vw,calc(100dvh * 1.777));aspect-ratio:1672/941;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);box-shadow:0 18px 65px rgba(0,0,0,.18);overflow:hidden;pointer-events:none}
@@ -16,6 +16,35 @@ body{position:relative;cursor:pointer;touch-action:manipulation;-webkit-tap-high
 #digestiveSvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #falling{position:fixed;inset:0;width:100vw;height:100dvh;pointer-events:none;z-index:5}
 @media(max-aspect-ratio:3/4){#stage{width:132vw;max-width:none;box-shadow:0 14px 50px rgba(0,0,0,.16)}}
+
+/* Control is anchored in the empty space above the shrimp, including mobile. */
+#poopAction{
+  position:absolute;z-index:10;left:48%;top:15.5%;transform:translate(-50%,-50%);
+  display:flex;align-items:center;justify-content:center;
+  width:clamp(155px,22vw,208px);height:clamp(54px,6vw,66px);
+  border:1.5px solid rgba(255,255,255,.85);border-radius:999px;
+  background:linear-gradient(145deg,#fff9ef 0%,#fae7cf 78%,#eec398 100%);
+  color:#50301f;font-family:system-ui,"PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:clamp(17px,2.1vw,21px);font-weight:750;letter-spacing:.055em;
+  box-shadow:0 7px 22px rgba(29,35,34,.23),inset 0 2px 2px #ffffffb0,inset 0 -3px 5px rgba(124,69,35,.13);
+  cursor:pointer;touch-action:manipulation;pointer-events:auto;isolation:isolate;
+  -webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;
+  transition:box-shadow .16s ease,filter .16s ease;
+}
+#poopAction span{z-index:1;pointer-events:none}
+#poopAction::before{
+ content:"";position:absolute;inset:-6px;border:1px solid rgba(255,239,207,.5);
+ border-radius:inherit;pointer-events:none;animation:softHalo 2.8s ease-in-out infinite;
+}
+#poopAction:active{filter:brightness(.94);box-shadow:0 2px 8px rgba(29,35,34,.18),inset 0 3px 6px rgba(124,69,35,.18)}
+#poopAction:focus-visible{outline:3px solid #ef995f;outline-offset:5px}
+#poopAction.popped{animation:buttonPop .36s cubic-bezier(.23,.94,.41,1.32)}
+.tap-wave{position:absolute;left:50%;top:50%;width:20px;height:20px;border:2px solid rgba(160,91,51,.48);border-radius:50%;transform:translate(-50%,-50%) scale(.25);opacity:0;pointer-events:none;animation:tapRipple .52s ease-out forwards}
+@keyframes softHalo{0%,100%{opacity:.33;transform:scale(.98)}50%{opacity:.78;transform:scale(1.025)}}
+@keyframes buttonPop{0%{transform:translate(-50%,-50%) scale(1)}25%{transform:translate(-50%,-50%) scale(.91)}68%{transform:translate(-50%,-50%) scale(1.075)}100%{transform:translate(-50%,-50%) scale(1)}}
+@keyframes tapRipple{0%{opacity:1;transform:translate(-50%,-50%) scale(.6)}100%{opacity:0;transform:translate(-50%,-50%) scale(11)}}
+@media(max-width:650px){#poopAction{width:177px;height:59px;font-size:19px}}
+@media(prefers-reduced-motion:reduce){#poopAction::before{animation:none}#poopAction.popped{animation:none}.tap-wave{animation:none}}
 </style>
 </head>
 <body>
@@ -34,6 +63,7 @@ body{position:relative;cursor:pointer;touch-action:manipulation;-webkit-tap-high
     <path id="gut" d="M 1118,424 C 1078,418 1038,421 997,431 C 946,444 905,452 868,451 C 828,450 785,438 734.1,420.4 L 709.5,418.2 L 683.5,417.0 L 657.5,420.1 L 631.5,426.9 L 605.5,436.2 L 579.5,445.7 L 553.5,459.1 L 527.5,474.9 L 501.4,488.1 L 475.4,500.8 L 449.4,513.9 L 423.4,525.4 L 397.4,531.4 L 371.4,536.4 L 345.5,537.9" fill="none" stroke="url(#filledGut)" stroke-width="12" stroke-linecap="round"/>
     <path id="gutGlint" d="M 1118,424 C 1078,418 1038,421 997,431 C 946,444 905,452 868,451 C 828,450 785,438 734.1,420.4 L 709.5,418.2 L 683.5,417.0 L 657.5,420.1 L 631.5,426.9 L 605.5,436.2 L 579.5,445.7 L 553.5,459.1 L 527.5,474.9 L 501.4,488.1 L 475.4,500.8 L 449.4,513.9 L 423.4,525.4 L 397.4,531.4 L 371.4,536.4 L 345.5,537.9" fill="none" stroke="#a28a65" stroke-width="2" stroke-opacity=".37" stroke-linecap="round"/>
   </svg>
+  <button id="poopAction" type="button" aria-label="点击拉屎"><span>点击拉屎</span></button>
 </div>
 <canvas id="falling" aria-hidden="true"></canvas>
 <script>
@@ -221,8 +251,19 @@ function tick(now){
   for(const p of pieces) drawPiece(p);
   requestAnimationFrame(tick);
 }
-window.addEventListener('pointerdown',e=>{ if(e.pointerType==='mouse' && e.button!==0) return; click(); },{passive:true});
-window.addEventListener('keydown',e=>{ if(e.code==='Space'||e.code==='Enter'){ e.preventDefault(); click(); } });
+const poopAction=document.getElementById('poopAction');
+poopAction.addEventListener('click',()=>{
+  click();
+  // Replay the squash-and-rebound on every click, including rapid repeated taps.
+  poopAction.classList.remove('popped');
+  void poopAction.offsetWidth;
+  poopAction.classList.add('popped');
+  const ripple=document.createElement('i');
+  ripple.className='tap-wave';
+  ripple.setAttribute('aria-hidden','true');
+  poopAction.appendChild(ripple);
+  window.setTimeout(()=>ripple.remove(),550);
+});
 window.__shrimpDebug={get fillSteps(){return fillSteps;}, get pieces(){return pieces;}};
 requestAnimationFrame(tick);
 })();
